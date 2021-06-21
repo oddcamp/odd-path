@@ -4,7 +4,7 @@ JS library to generate the SVG path that will be used as a frame for the site an
 
 ## Basic usage
 
-Create an array of lines and pass it to the `buildFrame()` function.
+Create an array of lines and pass it to the `svgFrame()` function.
 
 ```js
 var path = [
@@ -14,14 +14,14 @@ var path = [
   ["v", -100],
 ];
 
-buildFrame("elementId", path);
+svgFrame("elementId", path);
 ```
 
-This will create a frame to the maximum available space. Notice that `buildFrame()` accept an `options` object that allows you to customize default values. More info on the path later.
+This will create a frame to the maximum available space. Notice that `svgFrame()` accept an `options` object that allows you to customize default values. More info on the path later.
 
 ### Syntax
 
-All you need to care about is `buildFrame()`, we already saw that it accepts an ID for the element and an array that defines the path but as anticipated is also able to accept an `options` object:
+All you need to care about is `svgFrame()`, we already saw that it accepts an ID for the element and an array that defines the path but as anticipated is also able to accept an `options` object:
 
 - `hStart` _(integer)_ default: `10` - defines the horizontal start point to draw the shape, it's value is threated as pixel and will also be used to define the minimum horizontal size of the frame,
 - `vStart` _(integer)_ default: `10` - defines the vertical (start point to draw the shape, it's value is threated as pixel and will also be used to define the minimum vertical size of the frame,
