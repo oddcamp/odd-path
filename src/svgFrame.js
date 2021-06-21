@@ -11,7 +11,7 @@ function percToPixel(val, base) {
   return (val / 100) * base;
 }
 
-const buildFrame = (svgId, points, options = {}) => {
+const svgFrame = (element, points, options = {}) => {
   let prevHValue;
   function createPath(point) {
     let [command, val] = point;
@@ -125,11 +125,14 @@ const buildFrame = (svgId, points, options = {}) => {
     return `a ${arcRad} ${arcRad} 0 0 ${sweep} ${x}${arcRad} ${y}${arcRad}`;
   }
 
-  const svg = document.querySelector(`#${svgId}`);
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  const svgNS = svg.namespaceURI;
+  const path = document.createElementNS(svgNS, "path");
 
-  // If not present exit.
-  if (!svg) return;
+  // Customize path
+  path.setAttribute("fill", "#87BF86");
 
+  svg.appendChild(path);
   const vw = Math.max(
     document.documentElement.clientWidth || 0,
     window.innerWidth || 0
@@ -152,21 +155,23 @@ const buildFrame = (svgId, points, options = {}) => {
   svg.setAttribute("viewBox", `0 0 ${vw} ${vh}`);
 
   // Wrapper path
-  let path = `M${vw} 0 L 0 0 L 0 ${vh} L ${vw} ${vh} L ${vw} 0 Z`;
+  let d = `M${vw} 0 L 0 0 L 0 ${vh} L ${vw} ${vh} L ${vw} 0 Z`;
 
   // Drawing shape
-  path += `M${hStart + arcRad} ${vStart}`;
+  d += `M${hStart + arcRad} ${vStart}`;
 
   // Creating path
   points.forEach((p, index) => {
     // Add line
-    path += createPath(p);
+    d += createPath(p);
     // Add arc
-    path += createArc(p, index);
+    d += createArc(p, index);
   });
 
-  const svgPath = svg.querySelector("path");
-  svgPath.setAttribute("d", path);
+  path.setAttribute("d", d);
+
+  svg.appendChild(path);
+  element.appendChild(svg);
 };
 
-export { buildFrame };
+export { svgFrame };

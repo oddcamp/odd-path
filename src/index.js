@@ -1,4 +1,4 @@
-import { buildFrame } from "./buildFrame";
+import { svgFrame } from "./svgFrame";
 import "./styles.css";
 
 // REMEMBER:
@@ -190,7 +190,8 @@ const paths = [
 const path = Math.floor(Math.random() * paths.length);
 const p = absPathTwo;
 
-// buildFrame("frame", p, { arcRad: 10 });
+// svgFrame("frame", p, { arcRad: 10 });
 
 // Random
-buildFrame("frame", paths[path], { arcRad: 10 });
+const container = document.querySelector(".svg-container");
+svgFrame(container, paths[path], { arcRad: 10 });
