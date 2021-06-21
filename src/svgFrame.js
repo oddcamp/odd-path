@@ -70,9 +70,7 @@ const svgFrame = (element, points, options = {}) => {
     if (command === "h" || command === "H") {
       // console.log({ prevHValue, val });
       if (nextPoint) {
-        if (isPositive) {
-          sweep = 1;
-        } else if (isClose || isStart) {
+        if (isPositive || isClose || isStart) {
           sweep = 1;
         } else {
           x = "-";
@@ -100,10 +98,7 @@ const svgFrame = (element, points, options = {}) => {
             sweep = 0;
             x = "-";
           }
-        } else if (prevHValue === "close") {
-          sweep = 1;
-          x = "-";
-        } else if (points[i + 1][1] === "start") {
+        } else if (prevHValue === "close" || points[i + 1][1] === "start") {
           sweep = 1;
           x = "-";
         }
@@ -131,8 +126,8 @@ const svgFrame = (element, points, options = {}) => {
 
   // Customize path
   path.setAttribute("fill", "#87BF86");
+  path.setAttribute("stroke-width", 0);
 
-  svg.appendChild(path);
   const vw = Math.max(
     document.documentElement.clientWidth || 0,
     window.innerWidth || 0
@@ -147,9 +142,12 @@ const svgFrame = (element, points, options = {}) => {
   // const vw = 1000;
   // const vh = 600;
 
-  let { hStart = 20, vStart = 20, arcRad = 15 } = options;
+  let { hStart = 20, vStart = 20, arcRad = 15, svgClass } = options;
 
   // Setting up the SVG
+  if (svgClass) {
+    svg.classList.add(svgClass);
+  }
   svg.setAttribute("width", `${vw}px`);
   svg.setAttribute("height", `${vh}px`);
   svg.setAttribute("viewBox", `0 0 ${vw} ${vh}`);
@@ -170,6 +168,7 @@ const svgFrame = (element, points, options = {}) => {
 
   path.setAttribute("d", d);
 
+  svg.appendChild(path);
   svg.appendChild(path);
   element.appendChild(svg);
 };
