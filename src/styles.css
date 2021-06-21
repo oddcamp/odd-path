@@ -1,0 +1,17 @@
+body {
+  font-family: sans-serif;
+  position: relative;
+  padding: 0;
+  margin: 0;
+}
+
+.content {
+  margin: 50px;
+}
+
+svg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
