@@ -11,7 +11,7 @@ function percToPixel(val, base) {
   return (val / 100) * base;
 }
 
-const svgFrame = (element, points, options = {}) => {
+const svgFrame = (element, config, options = {}) => {
   let prevHValue;
   function createPath(point) {
     let [command, val] = point;
@@ -120,6 +120,11 @@ const svgFrame = (element, points, options = {}) => {
     return `a ${arcRad} ${arcRad} 0 0 ${sweep} ${x}${arcRad} ${y}${arcRad}`;
   }
 
+  // Remove direct SVG child
+  if (element.querySelector(`svg`)) {
+    element.querySelector(`svg`).remove();
+  }
+
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   const svgNS = svg.namespaceURI;
   const path = document.createElementNS(svgNS, "path");
@@ -142,7 +147,10 @@ const svgFrame = (element, points, options = {}) => {
   // const vw = 1000;
   // const vh = 600;
 
-  let { hStart = 20, vStart = 20, arcRad = 15, svgClass } = options;
+  // Maybe pass vw and vh from Resizer? Looks to me that it does not care about window size
+  // let { hStart = 20, vStart = 20, arcRad = 15, svgClass, vw, vh } = options;
+  let { hStart = 20, vStart = 20, svgClass } = options;
+  const { arcRad = 0, points } = config;
 
   // Setting up the SVG
   if (svgClass) {

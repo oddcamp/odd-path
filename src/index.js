@@ -100,33 +100,74 @@ const relPathSquare = [
   ["v", -100],
 ];
 
-const absPathOne = [
-  ["H", 100],
-  ["v", 5],
-  ["H", 50],
-  ["v", 5],
-  ["H", "close"],
-  ["v", 80],
-  ["H", 100],
-  ["v", 10],
-  ["H", "start"],
-  ["v", -100],
-];
+const absPathOne = {
+  0: {
+    arcRad: 5,
+    points: [
+      ["H", 60],
+      ["v", 5],
+      ["H", 30],
+      ["v", 5],
+      ["H", "close"],
+      ["v", 80],
+      ["H", 40],
+      ["v", 10],
+      ["H", "start"],
+      ["v", -100],
+    ],
+  },
+  640: {
+    arcRad: 10,
+    points: [
+      ["H", 100],
+      ["v", 5],
+      ["H", 50],
+      ["v", 5],
+      ["H", "close"],
+      ["v", 80],
+      ["H", 100],
+      ["v", 10],
+      ["H", "start"],
+      ["v", -100],
+    ],
+  },
 
-const absPathTwo = [
-  ["H", 50],
-  ["v", 20],
-  ["H", "close"],
-  ["v", 70],
-  ["H", 50],
-  ["v", 10],
-  ["H", -80],
-  ["v", -10],
-  ["H", -50],
-  ["v", -60],
-  ["H", "start"],
-  ["v", -30],
-];
+  1024: {
+    arcRad: 15,
+    points: [
+      ["H", 150],
+      ["v", 5],
+      ["H", 75],
+      ["v", 5],
+      ["H", "close"],
+      ["v", 80],
+      ["H", 150],
+      ["v", 10],
+      ["H", "start"],
+      ["v", -100],
+    ],
+  },
+};
+
+const absPathTwo = {
+  0: {
+    arcRad: 10,
+    points: [
+      ["H", 50],
+      ["v", 20],
+      ["H", "close"],
+      ["v", 70],
+      ["H", 50],
+      ["v", 10],
+      ["H", -80],
+      ["v", -10],
+      ["H", -50],
+      ["v", -60],
+      ["H", "start"],
+      ["v", -30],
+    ],
+  },
+};
 
 const absPathThree = [
   ["h", 100],
@@ -187,11 +228,41 @@ const paths = [
   absPathThree,
 ];
 
-const path = Math.floor(Math.random() * paths.length);
-const p = absPathTwo;
-
-// svgFrame("frame", p, { arcRad: 10 });
-
-// Random
+// const path = Math.floor(Math.random() * paths.length);
+const p = absPathOne;
 const container = document.querySelector(".svg-container");
-svgFrame(container, paths[path], { arcRad: 10 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Not working on resize
+  // if (Object.entries(p).length > 1) {
+  //   return new ResizeObserver(perfResize).observe(document.body);
+  // }
+
+  // const container = document.querySelector(".svg-container");
+  // svgFrame(container, p[0]);
+
+  return new ResizeObserver(perfResize).observe(document.body);
+});
+
+function debounce(fn, delay = 300) {
+  let timer;
+
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn(...args);
+    }, delay);
+  };
+}
+
+const perfResize = debounce(handleResize);
+
+function handleResize(entries) {
+  const acceptedBp = Object.entries(p).reduce((acc, p) => {
+    const [bp] = p;
+    return window.matchMedia(`(min-width: ${bp}px`).matches ? bp : acc;
+  }, 0);
+  console.log(entries[0].target);
+
+  svgFrame(container, p[acceptedBp]);
+}
