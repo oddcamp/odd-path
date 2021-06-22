@@ -46,8 +46,17 @@ const svgFrame = (element, config, options = {}) => {
     return command + calculated;
   }
 
-  function createArc(p, i) {
+  /**
+   * This functions is in charge of creating the arc for the angles of the path
+   *
+   * @param {Object[]} p - Pair of command - value needed to decide the type of arc
+   * @param {number} i - The index of the array we are currently looping
+   * @param {number} r - The radius we want to use to create the arc
+   * @returns
+   */
+  function createArc(p, i, r = arcRad) {
     const [command, val] = p;
+    console.log({ r });
     // Arc definitions
     let sweep = 0;
     let x = "";
@@ -117,7 +126,8 @@ const svgFrame = (element, config, options = {}) => {
       }
     }
 
-    return `a ${arcRad} ${arcRad} 0 0 ${sweep} ${x}${arcRad} ${y}${arcRad}`;
+    // return `a ${arcRad} ${arcRad} 0 0 ${sweep} ${x}${arcRad} ${y}${arcRad}`;
+    return `a ${r} ${r} 0 0 ${sweep} ${x}${r} ${y}${r}`;
   }
 
   // Remove direct SVG child
@@ -162,16 +172,21 @@ const svgFrame = (element, config, options = {}) => {
 
   // Wrapper path
   let d = `M${vw} 0 L 0 0 L 0 ${vh} L ${vw} ${vh} L ${vw} 0 Z`;
-
   // Drawing shape
   d += `M${hStart + arcRad} ${vStart}`;
+  let zeroD = d;
 
+  const animate = true;
   // Creating path
   points.forEach((p, index) => {
     // Add line
     d += createPath(p);
     // Add arc
     d += createArc(p, index);
+    if (animate) {
+      zeroD += `${p[0]}0`;
+      zeroD += createArc(p, index, 0);
+    }
   });
 
   path.setAttribute("d", d);
