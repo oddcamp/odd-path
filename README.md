@@ -8,14 +8,15 @@ Create an array of lines and pass it to the `svgFrame()` function.
 
 ```js
 var path = {
-	0: {
-		arcRad: 10,
-		points: [
-			["h", 100],
-			["v", 100],
-			["h", -100],
-			["v", -100],
-		]
+  0: {
+    arcRad: 5,
+    points: [
+      ["h", 100],
+      ["v", 100],
+      ["h", -100],
+      ["v", -100],
+    ],
+  },
 };
 
 svgFrame("elementId", path);
