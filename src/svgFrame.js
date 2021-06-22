@@ -158,12 +158,15 @@ const svgFrame = (element, config, options = {}) => {
 
   // Maybe pass vw and vh from Resizer? Looks to me that it does not care about window size
   // let { hStart = 20, vStart = 20, arcRad = 15, svgClass, vw, vh } = options;
-  let { hStart = 20, vStart = 20, svgClass } = options;
+  let { hStart = 20, vStart = 20, svgClass, animated = true } = options;
   const { arcRad = 0, points } = config;
 
   // Setting up the SVG
   if (svgClass) {
     svg.classList.add(svgClass);
+  }
+  if (animated) {
+    svg.classList.add("animated");
   }
   svg.setAttribute("width", `${vw}px`);
   svg.setAttribute("height", `${vh}px`);
