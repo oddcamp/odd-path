@@ -262,7 +262,6 @@ function handleResize(entries) {
     const [bp] = p;
     return window.matchMedia(`(min-width: ${bp}px`).matches ? bp : acc;
   }, 0);
-  console.log(entries[0].target);
 
   svgFrame(container, p[acceptedBp]);
 }
