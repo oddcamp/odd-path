@@ -11,7 +11,7 @@ function percToPixel(val, base) {
   return (val / 100) * base;
 }
 
-const svgFrame = (element, points, options = {}) => {
+const svgFrame = (element, config, options = {}) => {
   let prevHValue;
   function createPath(point) {
     let [command, val] = point;
@@ -46,8 +46,17 @@ const svgFrame = (element, points, options = {}) => {
     return command + calculated;
   }
 
-  function createArc(p, i) {
+  /**
+   * This functions is in charge of creating the arc for the angles of the path
+   *
+   * @param {Object[]} p - Pair of command - value needed to decide the type of arc
+   * @param {number} i - The index of the array we are currently looping
+   * @param {number} r - The radius we want to use to create the arc
+   * @returns {string} - Defines the arc implemented in the path
+   */
+  function createArc(p, i, r = arcRad) {
     const [command, val] = p;
+
     // Arc definitions
     let sweep = 0;
     let x = "";
@@ -70,9 +79,7 @@ const svgFrame = (element, points, options = {}) => {
     if (command === "h" || command === "H") {
       // console.log({ prevHValue, val });
       if (nextPoint) {
-        if (isPositive) {
-          sweep = 1;
-        } else if (isClose || isStart) {
+        if (isPositive || isClose || isStart) {
           sweep = 1;
         } else {
           x = "-";
@@ -100,10 +107,7 @@ const svgFrame = (element, points, options = {}) => {
             sweep = 0;
             x = "-";
           }
-        } else if (prevHValue === "close") {
-          sweep = 1;
-          x = "-";
-        } else if (points[i + 1][1] === "start") {
+        } else if (prevHValue === "close" || points[i + 1][1] === "start") {
           sweep = 1;
           x = "-";
         }
@@ -122,7 +126,12 @@ const svgFrame = (element, points, options = {}) => {
       }
     }
 
-    return `a ${arcRad} ${arcRad} 0 0 ${sweep} ${x}${arcRad} ${y}${arcRad}`;
+    return `a ${r} ${r} 0 0 ${sweep} ${x}${r} ${y}${r}`;
+  }
+
+  // Remove direct SVG child
+  if (element.querySelector(`svg`)) {
+    element.querySelector(`svg`).remove();
   }
 
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -131,8 +140,8 @@ const svgFrame = (element, points, options = {}) => {
 
   // Customize path
   path.setAttribute("fill", "#87BF86");
+  path.setAttribute("stroke-width", 0);
 
-  svg.appendChild(path);
   const vw = Math.max(
     document.documentElement.clientWidth || 0,
     window.innerWidth || 0
@@ -147,16 +156,21 @@ const svgFrame = (element, points, options = {}) => {
   // const vw = 1000;
   // const vh = 600;
 
-  let { hStart = 20, vStart = 20, arcRad = 15 } = options;
+  // Maybe pass vw and vh from Resizer? Looks to me that it does not care about window size
+  // let { hStart = 20, vStart = 20, arcRad = 15, svgClass, vw, vh } = options;
+  let { hStart = 20, vStart = 20, svgClass } = options;
+  const { arcRad = 0, points } = config;
 
   // Setting up the SVG
+  if (svgClass) {
+    svg.classList.add(svgClass);
+  }
   svg.setAttribute("width", `${vw}px`);
   svg.setAttribute("height", `${vh}px`);
   svg.setAttribute("viewBox", `0 0 ${vw} ${vh}`);
 
   // Wrapper path
   let d = `M${vw} 0 L 0 0 L 0 ${vh} L ${vw} ${vh} L ${vw} 0 Z`;
-
   // Drawing shape
   d += `M${hStart + arcRad} ${vStart}`;
 
@@ -170,6 +184,7 @@ const svgFrame = (element, points, options = {}) => {
 
   path.setAttribute("d", d);
 
+  svg.appendChild(path);
   svg.appendChild(path);
   element.appendChild(svg);
 };
