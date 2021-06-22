@@ -56,7 +56,6 @@ const svgFrame = (element, config, options = {}) => {
    */
   function createArc(p, i, r = arcRad) {
     const [command, val] = p;
-    console.log({ r });
     // Arc definitions
     let sweep = 0;
     let x = "";
@@ -172,28 +171,50 @@ const svgFrame = (element, config, options = {}) => {
 
   // Wrapper path
   let d = `M${vw} 0 L 0 0 L 0 ${vh} L ${vw} ${vh} L ${vw} 0 Z`;
+  let zeroD = d;
   // Drawing shape
   d += `M${hStart + arcRad} ${vStart}`;
-  let zeroD = d;
+  zeroD += `M0 0`;
 
-  const animate = true;
+  const animating = true;
   // Creating path
   points.forEach((p, index) => {
     // Add line
     d += createPath(p);
     // Add arc
     d += createArc(p, index);
-    if (animate) {
-      zeroD += `${p[0]}0`;
+    if (animating) {
+      let newValue = 0;
+      if (p[0] === "h" || p[0] === "v") {
+        // Calculate max size for relative horizontal
+        if (p[1] > 0 && p[1] > 50) {
+          console.log(`p1 is ${p[1]} for p0 ${p[0]}`);
+          newValue = p[0] === "h" ? vw : vh;
+          console.log("newValue:", newValue);
+        }
+      }
+
+      if (p[0] === "H") {
+        // Set the max horizontal value
+        if (p[1] === "close" || p[1] > 0) {
+          newValue = vw;
+        }
+      }
+
+      zeroD += `${p[0]}${newValue}`;
       zeroD += createArc(p, index, 0);
     }
   });
 
-  path.setAttribute("d", d);
+  path.setAttribute("d", zeroD);
+  console.log("zeroD:", zeroD);
+  console.log("d:", d);
 
   svg.appendChild(path);
   svg.appendChild(path);
   element.appendChild(svg);
+
+  return { from: zeroD, to: d };
 };
 
 export { svgFrame };

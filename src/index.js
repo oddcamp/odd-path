@@ -1,3 +1,4 @@
+import anime from "animejs/lib/anime.es.js";
 import { svgFrame } from "./svgFrame";
 import "./styles.css";
 
@@ -230,18 +231,11 @@ const paths = [
 
 // const path = Math.floor(Math.random() * paths.length);
 const p = absPathOne;
-const container = document.querySelector(".svg-container");
+const containerClass = ".svg-container";
+const container = document.querySelector(containerClass);
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Not working on resize
-  // if (Object.entries(p).length > 1) {
-  //   return new ResizeObserver(perfResize).observe(document.body);
-  // }
-
-  // const container = document.querySelector(".svg-container");
-  // svgFrame(container, p[0]);
-
-  return new ResizeObserver(perfResize).observe(document.body);
+  new ResizeObserver(perfResize).observe(document.body);
 });
 
 function debounce(fn, delay = 300) {
@@ -262,7 +256,20 @@ function handleResize(entries) {
     const [bp] = p;
     return window.matchMedia(`(min-width: ${bp}px`).matches ? bp : acc;
   }, 0);
-  console.log(entries[0].target);
 
-  svgFrame(container, p[acceptedBp]);
+  const paths = svgFrame(container, p[acceptedBp]);
+
+  // Once resized it's time to animate it
+  animate(paths);
+}
+
+function animate(paths) {
+  console.log("running animate");
+  anime({
+    targets: `${containerClass} path`,
+    d: [{ value: paths.to }],
+    easing: "easeOutQuad",
+    duration: 10000,
+    loop: false,
+  });
 }
