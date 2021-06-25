@@ -174,7 +174,8 @@ const svgFrame = (element, config, options = {}) => {
   let zeroD = d;
   // Drawing shape
   d += `M${hStart + arcRad} ${vStart}`;
-  zeroD += `M0 0`;
+//   zeroD += `M0 0`;
+  zeroD += `M${hStart + arcRad} ${vStart}`;
 
   const animating = true;
   // Creating path
@@ -183,31 +184,57 @@ const svgFrame = (element, config, options = {}) => {
     d += createPath(p);
     // Add arc
     d += createArc(p, index);
+
+	// Calculate start shape to animate from
     if (animating) {
       let newValue = 0;
-      if (p[0] === "h" || p[0] === "v") {
+      if (p[0] === "h" && Math.abs(p[1]) > 50) {
         // Calculate max size for relative horizontal
-        if (p[1] > 0 && p[1] > 50) {
-          console.log(`p1 is ${p[1]} for p0 ${p[0]}`);
-          newValue = p[0] === "h" ? vw : vh;
-          console.log("newValue:", newValue);
-        }
+          newValue =  vw;
       }
+      
 
-      if (p[0] === "H") {
+      if (p[0] === "H" && (p[1] === "close" || p[1] > 0)) {
+		  console.log(`Am I reading close? ${p[1]}`)
         // Set the max horizontal value
-        if (p[1] === "close" || p[1] > 0) {
           newValue = vw;
-        }
       }
-
-      zeroD += `${p[0]}${newValue}`;
+			
+		
+		zeroD += p[0] === "v" ? createPath(p) : `${p[0]}${newValue}`;
+	  
       zeroD += createArc(p, index, 0);
     }
   });
 
+//   const customFrom = 'M1212 0 L 0 0 L 0 1065 L 1212 1065 L 1212 0 ZM30 20h1034.8a 10 10 0 0 1 10 10v185a 10 10 0 0 0 10 10h97.2a 10 10 0 0 1 10 10v185a 10 10 0 0 1 -10 10h-97.2a 10 10 0 0 0 -10 10v390a 10 10 0 0 0 10 10h97.2a 10 10 0 0 1 10 10v185a 10 10 0 0 1 -10 10h-1152a 10 10 0 0 1 -10 -10v-1005a 10 10 0 0 1 10 -10';
+//   const customFrom = `M1212 0 L 0 0 L 0 1065 L 1212 1065 L 1212 0 Z
+//   M0 0
+//   h-1212
+//   a 10 10 0 0 1 10 10
+//   v185
+//   a 10 10 0 0 0 10 10
+//   h1212
+//   a 10 10 0 0 1 10 10
+//   v185
+//   a 10 10 0 0 1 -10 10
+//   h1212
+//   a 10 10 0 0 0 -10 10
+//   v390
+//   a 10 10 0 0 0 10 10
+//   h1212
+//   a 10 10 0 0 1 10 10
+//   v185
+//   a 10 10 0 0 1 -10 10
+//   h-1212
+//   a 10 10 0 0 1 -10 -10
+//   v-1005
+//   a 10 10 0 0 1 10 -10
+//   `;
+//   const customTo = 'M1212 0 L 0 0 L 0 1065 L 1212 1065 L 1212 0 ZM30 20h1034.8a 10 10 0 0 1 10 10v287.5a 10 10 0 0 0 10 10h97.2a 10 10 0 0 1 10 10v390a 10 10 0 0 1 -10 10h-15.159999999999997a 10 10 0 0 0 -10 10v236.25a 10 10 0 0 0 10 10h15.159999999999997a 10 10 0 0 1 10 10v31.25a 10 10 0 0 1 -10 10h-1152a 10 10 0 0 1 -10 -10v-1005a 10 10 0 0 1 10 -10';
+
   path.setAttribute("d", zeroD);
-  console.log("zeroD:", zeroD);
+  console.log("D:", zeroD);
   console.log("d:", d);
 
   svg.appendChild(path);
