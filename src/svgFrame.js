@@ -84,12 +84,12 @@ const svgFrame = (element, config, options = {}) => {
           x = "-";
         }
 
-        if (prevHValue === "close") {
+        if (prevHValue === "close" && i !== 0) {
           sweep = 0;
           x = "-";
         }
       } else {
-        if (isPositive) {
+        if (isPositive || prevHValue === "start") {
           y = "-";
         } else {
           sweep = 1;
@@ -109,6 +109,8 @@ const svgFrame = (element, config, options = {}) => {
         } else if (prevHValue === "close" || points[i + 1][1] === "start") {
           sweep = 1;
           x = "-";
+        } else {
+          sweep = 0;
         }
       } else {
         if (isPositive) {
@@ -118,6 +120,9 @@ const svgFrame = (element, config, options = {}) => {
           if (isLast) {
             sweep = 1;
             y = "-";
+          } else if (prevHValue === "start") {
+            sweep = 1;
+            y = "-";
           } else {
             x = y = "-";
           }
@@ -125,7 +130,6 @@ const svgFrame = (element, config, options = {}) => {
       }
     }
 
-    // return `a ${arcRad} ${arcRad} 0 0 ${sweep} ${x}${arcRad} ${y}${arcRad}`;
     return `a ${r} ${r} 0 0 ${sweep} ${x}${r} ${y}${r}`;
   }
 
@@ -156,10 +160,8 @@ const svgFrame = (element, config, options = {}) => {
   // const vw = 1000;
   // const vh = 600;
 
-  // Maybe pass vw and vh from Resizer? Looks to me that it does not care about window size
-  // let { hStart = 20, vStart = 20, arcRad = 15, svgClass, vw, vh } = options;
-  let { hStart = 20, vStart = 20, svgClass } = options;
-  const { arcRad = 0, points } = config;
+  let { hStart = 20, vStart = 20, svgClass, animate = true } = options;
+  const { arcRad = 0, start = [], points } = config;
 
   // Setting up the SVG
   if (svgClass) {
@@ -174,69 +176,44 @@ const svgFrame = (element, config, options = {}) => {
   let zeroD = d;
   // Drawing shape
   d += `M${hStart + arcRad} ${vStart}`;
-//   zeroD += `M0 0`;
   zeroD += `M${hStart + arcRad} ${vStart}`;
 
-  const animating = true;
   // Creating path
   points.forEach((p, index) => {
     // Add line
     d += createPath(p);
     // Add arc
     d += createArc(p, index);
-
-	// Calculate start shape to animate from
-    if (animating) {
-      let newValue = 0;
-      if (p[0] === "h" && Math.abs(p[1]) > 50) {
-        // Calculate max size for relative horizontal
-          newValue =  vw;
-      }
-      
-
-      if (p[0] === "H" && (p[1] === "close" || p[1] > 0)) {
-		  console.log(`Am I reading close? ${p[1]}`)
-        // Set the max horizontal value
-          newValue = vw;
-      }
-			
-		
-		zeroD += p[0] === "v" ? createPath(p) : `${p[0]}${newValue}`;
-	  
-      zeroD += createArc(p, index, 0);
-    }
   });
 
-//   const customFrom = 'M1212 0 L 0 0 L 0 1065 L 1212 1065 L 1212 0 ZM30 20h1034.8a 10 10 0 0 1 10 10v185a 10 10 0 0 0 10 10h97.2a 10 10 0 0 1 10 10v185a 10 10 0 0 1 -10 10h-97.2a 10 10 0 0 0 -10 10v390a 10 10 0 0 0 10 10h97.2a 10 10 0 0 1 10 10v185a 10 10 0 0 1 -10 10h-1152a 10 10 0 0 1 -10 -10v-1005a 10 10 0 0 1 10 -10';
-//   const customFrom = `M1212 0 L 0 0 L 0 1065 L 1212 1065 L 1212 0 Z
-//   M0 0
-//   h-1212
-//   a 10 10 0 0 1 10 10
-//   v185
-//   a 10 10 0 0 0 10 10
-//   h1212
-//   a 10 10 0 0 1 10 10
-//   v185
-//   a 10 10 0 0 1 -10 10
-//   h1212
-//   a 10 10 0 0 0 -10 10
-//   v390
-//   a 10 10 0 0 0 10 10
-//   h1212
-//   a 10 10 0 0 1 10 10
-//   v185
-//   a 10 10 0 0 1 -10 10
-//   h-1212
-//   a 10 10 0 0 1 -10 -10
-//   v-1005
-//   a 10 10 0 0 1 10 -10
-//   `;
-//   const customTo = 'M1212 0 L 0 0 L 0 1065 L 1212 1065 L 1212 0 ZM30 20h1034.8a 10 10 0 0 1 10 10v287.5a 10 10 0 0 0 10 10h97.2a 10 10 0 0 1 10 10v390a 10 10 0 0 1 -10 10h-15.159999999999997a 10 10 0 0 0 -10 10v236.25a 10 10 0 0 0 10 10h15.159999999999997a 10 10 0 0 1 10 10v31.25a 10 10 0 0 1 -10 10h-1152a 10 10 0 0 1 -10 -10v-1005a 10 10 0 0 1 10 -10';
+  // Calculate start shape to animate from
+  if (animate && start.length > 0) {
+    start.forEach((p, index) => {
+      zeroD += createPath(p);
+      zeroD += createArc(p, index);
+    });
+  }
 
-  path.setAttribute("d", zeroD);
-  console.log("D:", zeroD);
-  console.log("d:", d);
+  // PREVIOUS APPROACH
+  // Math calculating start shape to animate from
+  // if (animating) {
+  //   let newValue = 0;
+  //   if (p[0] === "h" && Math.abs(p[1]) > 50) {
+  //     // Calculate max size for relative horizontal
+  //     newValue = vw;
+  //   }
+  //   if (p[0] === "H" && (p[1] === "close" || p[1] > 0)) {
+  //     console.log(`Am I reading close? ${p[1]}`);
+  //     // Set the max horizontal value
+  //     newValue = vw;
+  //   }
+  //   zeroD += p[0] === "v" ? createPath(p) : `${p[0]}${newValue}`;
+  //   zeroD += createArc(p, index, 0);
+  // }
 
+  const setPath = animate && start.length > 0 ? zeroD : d;
+
+  path.setAttribute("d", setPath);
   svg.appendChild(path);
   svg.appendChild(path);
   element.appendChild(svg);

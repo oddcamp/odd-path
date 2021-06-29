@@ -29,6 +29,7 @@ function handleResize(entries) {
     const [bp] = p;
     return window.matchMedia(`(min-width: ${bp}px`).matches ? bp : acc;
   }, 0);
+
   const paths = svgFrame(container, p[acceptedBp], { animate: true });
 
   // Once resized it's time to animate it (if you have points)

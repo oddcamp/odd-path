@@ -93,6 +93,12 @@ export const relSix = [
 export const relSquare = {
   0: {
     arcRad: 5,
+    start: [
+      ["h", 80],
+      ["v", 80],
+      ["h", -80],
+      ["v", -80],
+    ],
     points: [
       ["h", 100],
       ["v", 100],
@@ -219,20 +225,39 @@ export const absThree = [
 ];
 
 // The following are edge cases that shown that the arc calculation needs improvements
-export const notPlayWellMiddleVertical = [
-  ["h", 100],
-  ["v", 100],
-  ["H", -60],
-  ["v", -10],
-  ["H", "start"],
-  ["v", -30],
-  ["H", -80],
-  ["v", -25],
-  ["H", -40],
-  ["v", -10],
-  ["H", "start"],
-  ["v", -25],
-];
+export const notPlayWellMiddleVertical = {
+  0: {
+    arcRad: 5,
+    start: [
+      ["h", 100],
+      ["v", 100],
+      ["H", -30],
+      ["v", -10],
+      ["H", "start"],
+      ["v", -30],
+      ["H", -50],
+      ["v", -25],
+      ["H", -30],
+      ["v", -10],
+      ["H", "start"],
+      ["v", -25],
+    ],
+    points: [
+      ["h", 100],
+      ["v", 100],
+      ["H", -60],
+      ["v", -10],
+      ["H", "start"],
+      ["v", -30],
+      ["H", -80],
+      ["v", -25],
+      ["H", -40],
+      ["v", -10],
+      ["H", "start"],
+      ["v", -25],
+    ],
+  },
+};
 
 export const notPlayWellMiddleHorizontal = [
   ["h", 30],
