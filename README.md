@@ -95,3 +95,86 @@ const oddFrame = {
   },
 };
 ```
+
+## Animating
+
+We can animate a path, all you need to do is pass a `start` property to the defining object in order to give the system the first points in order to start the animation from.
+
+So we can animate the paths above like so:
+
+```js
+const absOne = {
+  0: {
+    arcRad: 5,
+    start: [
+      ["H", 10],
+      ["v", 5],
+      ["H", 10],
+      ["v", 5],
+      ["H", "close"],
+      ["v", 80],
+      ["H", 30],
+      ["v", 10],
+      ["H", "start"],
+      ["v", -100],
+    ],
+    points: [
+      ["H", 60],
+      ["v", 5],
+      ["H", 30],
+      ["v", 5],
+      ["H", "close"],
+      ["v", 80],
+      ["H", 40],
+      ["v", 10],
+      ["H", "start"],
+      ["v", -100],
+    ],
+  },
+  640: {
+    arcRad: 10,
+    start: [
+      ["H", 60],
+      ["v", 5],
+      ["H", 35],
+      ["v", 5],
+      ["H", "close"],
+      ["v", 80],
+      ["H", 40],
+      ["v", 10],
+      ["H", "start"],
+      ["v", -100],
+    ],
+    points: [
+      ["H", 100],
+      ["v", 10],
+      ["H", 50],
+      ["v", 10],
+      ["H", "close"],
+      ["v", 70],
+      ["H", 100],
+      ["v", 10],
+      ["H", "start"],
+      ["v", -100],
+    ],
+  },
+
+  1024: {
+    arcRad: 15,
+    points: [
+      ["H", 150],
+      ["v", 5],
+      ["H", 75],
+      ["v", 5],
+      ["H", "close"],
+      ["v", 80],
+      ["H", 150],
+      ["v", 10],
+      ["H", "start"],
+      ["v", -100],
+    ],
+  },
+};
+```
+
+As you can see we added the starting point for the `0` and the `640` breakpoint this makes the path at `1024` static.

@@ -69,16 +69,18 @@ const svgFrame = (element, config, options = {}) => {
     const isLast = i === points.length - 1;
 
     // Next
-    const nextPoint =
-      points[i + 1] &&
-      (points[i + 1][1] > 0 ||
-        points[i + 1][1] === "close" ||
-        points[i + 1][1] === "start");
+    const haveNext = points[i + 1];
+    const haveNextPositive = haveNext ? points[i + 1][1] > 0 : false;
+    const haveNextNegative = haveNext ? points[i + 1][1] < 0 : false;
+    const haveNextStart = haveNext ? points[i + 1][1] === "start" : false;
+    const nextValue = haveNext ? points[i + 1][1] : 0;
+    const prevValue = points[i - 1] ? points[i - 1][1] : 0;
 
     if (command === "h" || command === "H") {
       // console.log({ prevHValue, val });
-      if (nextPoint) {
-        if (isPositive || isClose || isStart) {
+      // console.log(`H is positive (${val}) but prev is ${prevHValue}`);
+      if (haveNextPositive) {
+        if ((isPositive || isClose || isStart) && prevValue >= 0) {
           sweep = 1;
         } else {
           x = "-";
@@ -88,8 +90,13 @@ const svgFrame = (element, config, options = {}) => {
           sweep = 0;
           x = "-";
         }
-      } else {
+      } else if (haveNextNegative) {
         if (isPositive || prevHValue === "start") {
+          if (prevHValue === "close") {
+            sweep = 1;
+            x = "-";
+          }
+
           y = "-";
         } else {
           sweep = 1;
@@ -97,16 +104,34 @@ const svgFrame = (element, config, options = {}) => {
         }
       }
       prevHValue = command === "H" ? val : prevHValue;
-    } else {
-      if (nextPoint) {
+    }
+
+    if (command === "v") {
+      if (haveNext) {
         if (!isPositive) {
-          sweep = 1;
-          y = "-";
-          if (prevHValue < 0) {
+          if (prevHValue < 0 || haveNextNegative) {
             sweep = 0;
             x = "-";
+
+            if (haveNextNegative || prevValue < 0) {
+              y = "-";
+            }
+
+            if (prevHValue === "start") {
+              sweep = 1;
+              x = "";
+            }
+          } else if (prevValue < nextValue && prevHValue !== undefined) {
+            x = y = "-";
+          } else {
+            sweep = 1;
+            y = "-";
           }
-        } else if (prevHValue === "close" || points[i + 1][1] === "start") {
+        } else if (
+          prevHValue === "close" ||
+          haveNextStart ||
+          haveNextNegative
+        ) {
           sweep = 1;
           x = "-";
         } else {
@@ -117,10 +142,7 @@ const svgFrame = (element, config, options = {}) => {
           sweep = 1;
           x = "-";
         } else {
-          if (isLast) {
-            sweep = 1;
-            y = "-";
-          } else if (prevHValue === "start") {
+          if (isLast || prevHValue === "start") {
             sweep = 1;
             y = "-";
           } else {
